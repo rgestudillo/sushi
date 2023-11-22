@@ -22,7 +22,6 @@ const Game = ({ word1, word2, player1Name, player2Name, onReset }) => {
         player2: 0  // Start at the first attempt
     });
 
-
     const handleKeyPress = (key) => {
         if (isInputDisabled) return;
         setPlayerInputs(prevInputs => {
@@ -71,6 +70,7 @@ const Game = ({ word1, word2, player1Name, player2Name, onReset }) => {
         let guess = playerInputs[currentPlayer][currentAttempt[currentPlayer]].map(tile => tile.letter).join('');
         let newInputs = { ...playerInputs };
         let guessEvaluation = evaluateGuess(guess, targetWord);
+        const nextAttempt = currentAttempt[currentPlayer] + 1;
         // Update the tiles with the color class based on evaluation
         newInputs[currentPlayer][currentAttempt[currentPlayer]] = guessEvaluation;
         setPlayerInputs(newInputs);
@@ -80,12 +80,14 @@ const Game = ({ word1, word2, player1Name, player2Name, onReset }) => {
         const isWin = guessEvaluation.every(tile => tile.colorClass === 'bg-green-500');
         if (isWin) {
             setWinner(currentPlayer === 'player1' ? player1Name : player2Name);
+        } else if (nextAttempt >= 6 && currentPlayer === 'player2') {
+            setWinner('Draw');
         } else {
             setIsInputDisabled(true);
             setisSwitchDisabled(false);
         }
     };
-    
+
 
     // Helper function to evaluate the guess against the target word
     const evaluateGuess = (guess, targetWord) => {
@@ -114,7 +116,7 @@ const Game = ({ word1, word2, player1Name, player2Name, onReset }) => {
     const isSubmitDisabled = playerInputs[currentPlayer][currentAttempt[currentPlayer]].some(tile => tile.letter === '');
     return (
         <div className={`app flex flex-col items-center justify-center h-screen  ${backgroundColorClass}`}>
-            {winner && <Winner winner={winner} onReset={handleReset} />}
+            {winner && <Winner winner={winner} onReset={handleReset} draw={winner === 'Draw'} />}
             {playerInputs[currentPlayer].map((wordData, index) => (
                 <Tiles
                     key={`${currentPlayer}-${index}`}
