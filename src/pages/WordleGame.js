@@ -6,7 +6,7 @@ import Winner from '../components/Winner';
 const Game = ({ word1, word2, player1Name, player2Name, onReset }) => {
     const numOfTiles = word1 && word2 ? Math.max(word1.length, word2.length) : 0;
     const emptyGuess = { letter: '', colorClass: 'bg-white' }; // Define a single empty guess tile
-    const initialGuesses = Array(6).fill(null).map(() => Array(numOfTiles).fill(emptyGuess)); // Create 6 rows of empty tiles
+    const initialGuesses = Array(5).fill(null).map(() => Array(numOfTiles).fill(emptyGuess)); // Create 6 rows of empty tiles
     const [isInputDisabled, setIsInputDisabled] = useState(false);
     const [isSwitchDisabled, setisSwitchDisabled] = useState(true);
     const [winner, setWinner] = useState(null);
@@ -80,7 +80,7 @@ const Game = ({ word1, word2, player1Name, player2Name, onReset }) => {
         const isWin = guessEvaluation.every(tile => tile.colorClass === 'bg-green-500');
         if (isWin) {
             setWinner(currentPlayer === 'player1' ? player1Name : player2Name);
-        } else if (nextAttempt >= 6 && currentPlayer === 'player2') {
+        } else if (nextAttempt >= 5 && currentPlayer === 'player2') {
             setWinner('Draw');
         } else {
             setIsInputDisabled(true);

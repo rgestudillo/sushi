@@ -12,7 +12,7 @@ export default function App() {
   const [words, setWords] = useState({ word1: '', word2: '' });
   const [showPassword, setShowPassword] = useState({ word1: false, word2: false });
   const [playGame, setPlayGame] = useState(false);
-
+  const [numberOfLetters, setNumberOfLetters] = useState(5);
   const resetGame = () => {
     setPlayGame(false);
     setWords({ word1: '', word2: '' });
@@ -28,6 +28,11 @@ export default function App() {
     } else {
       // Handle the error state here
     }
+  };
+
+  const handleLetterChange = (event) => {
+    // Update the state to the new number of letters
+    setNumberOfLetters(Number(event.target.value));
   };
 
   const handlePlayerChange = (event) => {
@@ -78,6 +83,21 @@ export default function App() {
               />
             </div>
           ))}
+          <div className="flex justify-around mb-4">
+            {[4, 5, 6, 7, 8].map((number) => (
+              <label key={number} className="inline-flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="numberOfLetters"
+                  value={number}
+                  checked={numberOfLetters === number}
+                  onChange={handleLetterChange}
+                  className="text-black focus:ring-black border-gray-300"
+                />
+                <span>{number}</span>
+              </label>
+            ))}
+          </div>
           {['word1', 'word2'].map(word => (
             <div key={word}>
               <label htmlFor={word} className="block text-sm font-medium text-gray-700">{`Word for ${players[word === 'word1' ? 'player1Name' : 'player2Name'] || `Player ${word === 'word1' ? '1' : '2'}`}`}</label>
@@ -87,6 +107,7 @@ export default function App() {
                   name={word}
                   id={word}
                   value={words[word]}
+                  maxLength={numberOfLetters}
                   onChange={handleWordChange}
                   className="block w-full border border-black rounded-md shadow-sm text-lg p-2 pr-10"
                   required
