@@ -8,24 +8,33 @@ import E from "./assets/E.png";
 import F from "./assets/F.png";
 
 export default function App() {
-  const [words, setWords] = useState({ Player1: '', Player2: '' });
-  const [showPassword, setShowPassword] = useState({ Player1: false, Player2: false });
+  const [players, setPlayers] = useState({ player1Name: '', player2Name: '' });
+  const [words, setWords] = useState({ word1: '', word2: '' });
+  const [showPassword, setShowPassword] = useState({ word1: false, word2: false });
   const [playGame, setPlayGame] = useState(false);
 
   const resetGame = () => {
     setPlayGame(false);
     setWords({ word1: '', word2: '' });
-    // Add any additional reset logic here if necessary
+    setPlayers({ player1Name: '', player2Name: '' });
+    // Reset password visibility if necessary
   };
 
-
-  const handleSubmit = (event) => {
+  const handleStartGame = (event) => {
     event.preventDefault();
-    // Add any validation for words here if needed
-    setPlayGame(true);
+    // Add validation for players' names and words here if needed
+    if (players.player1Name && players.player2Name && words.word1 && words.word2) {
+      setPlayGame(true);
+    } else {
+      // Handle the error state here
+    }
   };
 
-  const handleChange = (event) => {
+  const handlePlayerChange = (event) => {
+    setPlayers({ ...players, [event.target.name]: event.target.value });
+  };
+
+  const handleWordChange = (event) => {
     setWords({ ...words, [event.target.name]: event.target.value });
   };
 
@@ -34,29 +43,46 @@ export default function App() {
   };
 
   if (playGame) {
-    return <WordleGame word1={words.Player1} word2={words.Player2} onReset={resetGame} />;
+    return (
+      <WordleGame
+        player1Name={players.player1Name}
+        player2Name={players.player2Name}
+        word1={words.word1}
+        word2={words.word2}
+        onReset={resetGame}
+      />
+    );
   }
 
   return (
     <div className="flex items-center justify-center h-screen bg-gradient-to-b from-yellow-500 to-white">
-      <img className="fixed -right-[255px] -bottom-[450px]" src={C} alt="C" />
-      <img className="fixed -left-[305px] -bottom-[250px]" src={B} alt="B" />
-      <img className="fixed -left-[200px] -top-[400px]" src={D} alt="D" />
-      <img className="fixed -right-[200px] -top-[300px]" src={A} alt="A" />
-      {/* <img className="fixed  -top-[50px]" src={F} alt="F" />
-      <img className="fixed  -bottom-[180px]" src={E} alt="E" /> */}
+      {/* ... (images and other UI elements) */}
       <div className="w-full max-w-md p-8 space-y-6 z-50">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {['Player1', 'Player2'].map((word) => (
+        <form onSubmit={handleStartGame} className="space-y-4">
+          {['player1Name', 'player2Name'].map(player => (
+            <div key={player}>
+              <label htmlFor={player} className="block text-sm font-medium text-gray-700">{`Player ${player === 'player1Name' ? '1' : '2'} Name`}</label>
+              <input
+                type="text"
+                name={player}
+                id={player}
+                value={players[player]}
+                onChange={handlePlayerChange}
+                className="mt-1 block w-full border border-black rounded-md shadow-sm text-lg p-2"
+                required
+              />
+            </div>
+          ))}
+          {['word1', 'word2'].map(word => (
             <div key={word}>
-              <label htmlFor={word} className="block text-sm font-medium text-gray-700">{word}</label>
+              <label htmlFor={word} className="block text-sm font-medium text-gray-700">{`Word for ${players[word === 'word1' ? 'player1Name' : 'player2Name'] || `Player ${word === 'word1' ? '1' : '2'}`}`}</label>
               <div className="mt-1 relative">
                 <input
                   type={showPassword[word] ? "text" : "password"}
                   name={word}
                   id={word}
                   value={words[word]}
-                  onChange={handleChange}
+                  onChange={handleWordChange}
                   className="block w-full border border-black rounded-md shadow-sm text-lg p-2 pr-10"
                   required
                 />
@@ -72,7 +98,7 @@ export default function App() {
           ))}
           <div className="flex justify-center">
             <button type="submit" className="px-4 py-2 bg-black text-white rounded-lg w-[50%]">
-              Play Game
+              Start Game
             </button>
           </div>
         </form>

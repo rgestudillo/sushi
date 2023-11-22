@@ -4,15 +4,15 @@ import Key from './Key';
 
 const Keyboard = ({ onKeyPress }) => {
     const rows = [
-        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'DEL'],
         ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-        ['DELETE', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'ENTER']
+        ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
     ];
 
     return (
         <div className="keyboard">
             {rows.map((row, index) => (
-                <div key={index} className="flex justify-center mb-1">
+                <div key={index} className="flex justify-center mb-1 space-x-1">
                     {row.map((keyValue) => (
                         <Key
                             key={keyValue}

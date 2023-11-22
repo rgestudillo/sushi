@@ -3,11 +3,12 @@ import Keyboard from '../components/Keyboard';
 import Tiles from '../components/Tiles';
 import Winner from '../components/Winner';
 
-const Game = ({ word1, word2, onReset }) => {
+const Game = ({ word1, word2, player1Name, player2Name, onReset }) => {
     const numOfTiles = word1 && word2 ? Math.max(word1.length, word2.length) : 0;
     const emptyGuess = { letter: '', colorClass: 'bg-white' }; // Define a single empty guess tile
     const initialGuesses = Array(6).fill(null).map(() => Array(numOfTiles).fill(emptyGuess)); // Create 6 rows of empty tiles
     const [isInputDisabled, setIsInputDisabled] = useState(false);
+    const [isSwitchDisabled, setisSwitchDisabled] = useState(true);
     const [winner, setWinner] = useState(null);
 
     const [playerInputs, setPlayerInputs] = useState({
@@ -31,7 +32,7 @@ const Game = ({ word1, word2, onReset }) => {
             // Get the current guess for the current player
             const currentGuess = newInputs[currentPlayer][currentAttempt[currentPlayer]];
 
-            if (key === 'DELETE') {
+            if (key === 'DEL') {
                 // Find the last non-empty tile index
                 let tileToDelete = currentGuess.findIndex(tile => tile.letter === '');
                 // If all tiles are empty, tileToDelete will be -1; start deleting from the end in that case
@@ -39,7 +40,7 @@ const Game = ({ word1, word2, onReset }) => {
 
                 // Set the tile to empty
                 newInputs[currentPlayer][currentAttempt[currentPlayer]][tileToDelete] = { letter: '', colorClass: 'bg-white' };
-            } else if (key !== 'ENTER' && key !== 'DELETE') {
+            } else {
                 // Find the first empty tile index or use the last tile if the guess is full
                 const currentTileIndex = currentGuess.findIndex(tile => tile.letter === '') !== -1
                     ? currentGuess.findIndex(tile => tile.letter === '')
@@ -61,6 +62,7 @@ const Game = ({ word1, word2, onReset }) => {
         }));
         setCurrentPlayer(currentPlayer === 'player1' ? 'player2' : 'player1');
         setIsInputDisabled(false);
+        setisSwitchDisabled(true);
     }
 
     const submitGuess = () => {
@@ -77,11 +79,13 @@ const Game = ({ word1, word2, onReset }) => {
         // Check if all tiles are green
         const isWin = guessEvaluation.every(tile => tile.colorClass === 'bg-green-500');
         if (isWin) {
-            setWinner(currentPlayer === 'player1' ? 'Player 1' : 'Player 2');
+            setWinner(currentPlayer === 'player1' ? player1Name : player2Name);
         } else {
             setIsInputDisabled(true);
+            setisSwitchDisabled(false);
         }
     };
+    
 
     // Helper function to evaluate the guess against the target word
     const evaluateGuess = (guess, targetWord) => {
@@ -129,8 +133,8 @@ const Game = ({ word1, word2, onReset }) => {
                 </button>
                 <button
                     onClick={switchPlayer}
-                    className={`mt-4 bg-green-500 text-white py-2 px-4 rounded ${isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    disabled={isSubmitDisabled}
+                    className={`mt-4 bg-green-500 text-white py-2 px-4 rounded ${isSwitchDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    disabled={isSwitchDisabled}
                 >
                     Switch Player
                 </button>
