@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import Keyboard from '../components/Keyboard';
 import Tiles from '../components/Tiles';
+import Winner from '../components/Winner';
 
-const Game = ({ word1, word2 }) => {
+const Game = ({ word1, word2, onReset }) => {
     const numOfTiles = word1 && word2 ? Math.max(word1.length, word2.length) : 0;
     const emptyGuess = { letter: '', colorClass: 'bg-white' }; // Define a single empty guess tile
     const initialGuesses = Array(6).fill(null).map(() => Array(numOfTiles).fill(emptyGuess)); // Create 6 rows of empty tiles
     const [isInputDisabled, setIsInputDisabled] = useState(false);
+    const [winner, setWinner] = useState(null);
 
     const [playerInputs, setPlayerInputs] = useState({
         player1: initialGuesses,
@@ -44,7 +46,7 @@ const Game = ({ word1, word2 }) => {
                     : numOfTiles - 1;
 
                 // Replace the letter at the current position with the new key
-                newInputs[currentPlayer][currentAttempt[currentPlayer]][currentTileIndex] = { letter: key, colorClass: '' };
+                newInputs[currentPlayer][currentAttempt[currentPlayer]][currentTileIndex] = { letter: key, colorClass: 'bg-white' };
             }
 
             return newInputs;
@@ -71,37 +73,49 @@ const Game = ({ word1, word2 }) => {
         newInputs[currentPlayer][currentAttempt[currentPlayer]] = guessEvaluation;
         setPlayerInputs(newInputs);
         setIsInputDisabled(true);
+
+        // Check if all tiles are green
+        const isWin = guessEvaluation.every(tile => tile.colorClass === 'bg-green-500');
+        if (isWin) {
+            setWinner(currentPlayer === 'player1' ? 'Player 1' : 'Player 2');
+        } else {
+            setIsInputDisabled(true);
+        }
     };
 
     // Helper function to evaluate the guess against the target word
     const evaluateGuess = (guess, targetWord) => {
         guess = guess.toLowerCase();
         targetWord = targetWord.toLowerCase();
-        console.log("GUESS IS: ", guess)
-        console.log("TARGET WORD IS: ", targetWord);
         return [...guess].map((letter, index) => {
             if (letter === targetWord[index]) {
                 return { letter, colorClass: 'bg-green-500' }; // Correct letter and position
             } else if (targetWord.includes(letter)) {
-                return { letter, colorClass: 'bg-orange-500' }; // Correct letter, wrong position
+                return { letter, colorClass: 'bg-pink-500' }; // Correct letter, wrong position
             } else {
                 return { letter, colorClass: 'bg-red-500' }; // Wrong letter
             }
         });
     };
 
-    const borderColor = currentPlayer === 'player1' ? 'border-yellow-500' : 'border-blue-500';
+    const handleReset = () => {
+        onReset(); // This function is provided by the parent component (App.js)
+    };
+
+    const backgroundColorClass = currentPlayer === 'player1'
+        ? 'bg-yellow-200' // Orange gradient for player1
+        : 'bg-blue-200';   // Blue gradient for player2
     // Determine if the submit button should be disabled
 
     const isSubmitDisabled = playerInputs[currentPlayer][currentAttempt[currentPlayer]].some(tile => tile.letter === '');
     return (
-        <div className="app flex flex-col items-center justify-center h-screen">
+        <div className={`app flex flex-col items-center justify-center h-screen  ${backgroundColorClass}`}>
+            {winner && <Winner winner={winner} onReset={handleReset} />}
             {playerInputs[currentPlayer].map((wordData, index) => (
                 <Tiles
                     key={`${currentPlayer}-${index}`}
                     wordData={wordData}
                     numOfTiles={numOfTiles}
-                    borderColor={borderColor}
                 />
             ))}
             <Keyboard onKeyPress={handleKeyPress} />

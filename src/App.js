@@ -12,6 +12,13 @@ export default function App() {
   const [showPassword, setShowPassword] = useState({ Player1: false, Player2: false });
   const [playGame, setPlayGame] = useState(false);
 
+  const resetGame = () => {
+    setPlayGame(false);
+    setWords({ word1: '', word2: '' });
+    // Add any additional reset logic here if necessary
+  };
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
     // Add any validation for words here if needed
@@ -27,7 +34,7 @@ export default function App() {
   };
 
   if (playGame) {
-    return <WordleGame word1={words.Player1} word2={words.Player2} />;
+    return <WordleGame word1={words.Player1} word2={words.Player2} onReset={resetGame} />;
   }
 
   return (
