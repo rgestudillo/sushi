@@ -56,7 +56,12 @@ export default function App() {
 
   return (
     <div className="flex items-center justify-center h-screen bg-gradient-to-b from-yellow-500 to-white">
-      {/* ... (images and other UI elements) */}
+      <img className="fixed -right-[155px] -bottom-[250px]" src={C} alt="C" />
+      <img className="fixed -left-[155px] -bottom-[250px]" src={B} alt="B" />
+      <img className="fixed -left-[170px] -top-[200px]" src={D} alt="D" />
+      <img className="fixed -right-[200px] -top-[200px]" src={A} alt="A" />
+      {/* <img className="fixed  -top-[50px]" src={F} alt="F" />
+      <img className="fixed  -bottom-[180px]" src={E} alt="E" /> */}
       <div className="w-full max-w-md p-8 space-y-6 z-50">
         <form onSubmit={handleStartGame} className="space-y-4">
           {['player1Name', 'player2Name'].map(player => (
